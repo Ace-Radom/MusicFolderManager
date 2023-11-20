@@ -68,6 +68,10 @@ def main():
         this_samplerate = tag.samplerate
         this_bitdepth = tag.bitdepth
         this_tracknum = tag.track
+        if this_title is None or this_tracknum is None:
+            rprint( "[red]Error:[/] title or tracknum tag is empty, skip" )
+            continue
+
         rprint( 
 f'''\t[yellow]title:[/] {this_title}
 \t[yellow]artist:[/] {this_artist}
@@ -89,9 +93,9 @@ f'''\t[yellow]title:[/] {this_title}
         except OSError as e:
             rprint( f"[red]Error:[/] Rename failed: {e}" )
 
-        if this_artist not in artist_set:
+        if this_artist is not None and this_artist not in artist_set:
             artist_set.add( this_artist )
-        if this_album not in album_set:
+        if this_album is not None and this_album not in album_set:
             album_set.add( this_album )
         if this_samplerate not in samplerate_set:
             samplerate_set.add( this_samplerate )

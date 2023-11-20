@@ -1,0 +1,2 @@
+# MusicFolderManager
+自用的用于管理Windows下Music文件夹命名规则的脚本

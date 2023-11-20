@@ -4,6 +4,19 @@ import os
 from rich import print as rprint
 from tinytag import TinyTag
 
+reserved_chars = {
+    '<': '＜',
+    '>': '＞',
+    ':': '：',
+    '"': '＂',
+    '/': '／',
+    '\\': '＼',
+    '|': '｜',
+    '?': '？',
+    '*': '＊'
+}
+reserved_chars_translation = str.maketrans( reserved_chars )
+
 def walk_target_dir( dir: str ) -> list[str]:
     filelist = list()
     for root , ds , fs in os.walk( dir ):
@@ -63,6 +76,7 @@ f'''\t[yellow]title:[/] {this_title}
 \t[yellow]samplerate/bitdepth:[/] {this_samplerate}Hz/{this_bitdepth}bit'''
         )
         new_filename = f"{this_tracknum:>0{tracknum_width}}. {this_title}{os.path.splitext( file )[1]}"
+        new_filename = new_filename.translate( reserved_chars_translation )
         rprint( f"[green]New Filename Generated:[/] [magenta]\"{new_filename}\"[/]" )
         confirm = input( "Comfirm / Rename: " )
         try:
@@ -92,7 +106,7 @@ f'''\t[yellow]title:[/] {this_title}
         rprint( "[yellow]Please choose or input the artist to use in dirname: " , end = "" )
         artist_in_dirname = input()
     else:
-        rprint( f"[yellow]artist:[/] {artist_set}[/]")
+        rprint( f"[yellow]artist:[/] {artist_set}")
         artist_in_dirname = next( iter( artist_set ) )
 
     if len( artist_in_dirname ) != 0:
@@ -122,7 +136,8 @@ f'''\t[yellow]title:[/] {this_title}
         rprint( "[red]Multiple samplerates or bitdepths in target directory, please judge them by yourself[/]" )
         write_sb_in_dirname = False
     
-    new_target_dirname = f"{dirname_title} {album_in_dirname}{artist_in_dirname if len( artist_in_dirname ) != 0 else ''} [{samplerate_in_dirname/1000}kHz／{bitdepth_in_dirname}bit]"
+    new_target_dirname = f"{dirname_title} {album_in_dirname}{artist_in_dirname if len( artist_in_dirname ) != 0 else ''} [{int( samplerate_in_dirname/1000 ) if samplerate_in_dirname % 1000 == 0 else round( samplerate_in_dirname / 1000 , 1 )}kHz／{bitdepth_in_dirname}bit]"
+    new_target_dirname = new_target_dirname.translate( reserved_chars_translation )
     rprint( f"[green]New Target Directory Name Generated:[/] [magenta]\"{new_target_dirname}\"[/]" )
     confirm = input( "Comfirm / Rename: " )
     try:
@@ -134,6 +149,8 @@ f'''\t[yellow]title:[/] {this_title}
         # needs to be changed
     except OSError as e:
         rprint( f"[red]Error:[/] Rename failed: {e}" )
+
+    print( "Work done and success" )
 
 if __name__ == "__main__":
     main()
